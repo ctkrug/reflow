@@ -101,6 +101,15 @@ describe("WindowStore", () => {
       expect(store.getWindows()).toEqual([a]);
       expect(listener).toHaveBeenCalledTimes(1);
     });
+
+    it("falls back to 0 rather than parking the window at NaN", () => {
+      const a = createWindow(0, 0, 0.2, 0.2);
+      const store = new WindowStore([a]);
+
+      store.moveWindow(a.id, NaN, NaN);
+
+      expect(store.getWindows()[0]).toMatchObject({ x: 0, y: 0 });
+    });
   });
 
   describe("reorder", () => {
