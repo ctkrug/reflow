@@ -1,5 +1,10 @@
 import "./style.css";
-import { renderPane } from "./canvas/renderPane";
+import {
+  beginTransition,
+  sampleAnimation,
+  type PaneAnimationState,
+} from "./canvas/animation";
+import { renderPane, type DrawableRect } from "./canvas/renderPane";
 import { findRectAt, nearestRectId } from "./interaction/hitTest";
 import { normalizedPoint } from "./interaction/pointer";
 import { bsp } from "./tiling/bsp";
@@ -100,16 +105,24 @@ export function mountApp(root: HTMLElement): void {
     SEED_GEOMETRY.map(([x, y, w, h]) => createWindow(x, y, w, h)),
   );
 
-  /** Each pane's most recently computed layout, kept for drag/hover hit-testing. */
+  /** Each pane's most recently computed (untweened) layout, for drag/hover hit-testing. */
   const paneRects = new Map<string, TileRect[]>();
+  const paneAnimations = new Map<string, PaneAnimationState>();
   let hoveredId: string | null = null;
   let dragWindowId: string | null = null;
   let dragPaneId: string | null = null;
+  let windowCount = 0;
+  let rafHandle = 0;
 
-  function paintPane(pane: PaneConfig, windowCount: number): void {
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reducedMotion = motionQuery.matches;
+  motionQuery.addEventListener("change", (event) => {
+    reducedMotion = event.matches;
+  });
+
+  function paintPane(pane: PaneConfig, rects: DrawableRect[]): void {
     const canvas = canvases.get(pane.id);
-    const rects = paneRects.get(pane.id);
-    if (!canvas || !rects) return;
+    if (!canvas) return;
     renderPane(canvas, rects, {
       stamp: pane.stamp,
       count: windowCount,
@@ -117,13 +130,50 @@ export function mountApp(root: HTMLElement): void {
     });
   }
 
-  function render(windows: TileWindow[]): void {
-    countLabel.textContent = `${windows.length} window${windows.length === 1 ? "" : "s"}`;
-    removeButton.disabled = windows.length === 0;
+  /** Repaints every pane from its settled (untweened) layout — used when idle. */
+  function paintIdle(): void {
+    if (rafHandle) return; // the animation loop will pick up the latest state next frame
+    PANES.forEach((pane) => paintPane(pane, paneRects.get(pane.id) ?? []));
+  }
+
+  function tick(): void {
+    const now = performance.now();
+    let stillAnimating = false;
     PANES.forEach((pane) => {
-      paneRects.set(pane.id, pane.algorithm(windows));
-      paintPane(pane, windows.length);
+      const state = paneAnimations.get(pane.id);
+      if (!state) return;
+      const frame = sampleAnimation(state, now);
+      paintPane(pane, frame.rects);
+      if (!frame.done) stillAnimating = true;
     });
+    rafHandle = stillAnimating ? requestAnimationFrame(tick) : 0;
+  }
+
+  function render(windows: TileWindow[]): void {
+    windowCount = windows.length;
+    countLabel.textContent = `${windowCount} window${windowCount === 1 ? "" : "s"}`;
+    removeButton.disabled = windowCount === 0;
+
+    const now = performance.now();
+    PANES.forEach((pane) => {
+      const previous = paneRects.get(pane.id) ?? [];
+      const next = pane.algorithm(windows);
+      paneRects.set(pane.id, next);
+
+      if (reducedMotion) {
+        paneAnimations.delete(pane.id);
+        paintPane(pane, next);
+      } else {
+        paneAnimations.set(pane.id, beginTransition(previous, next, now));
+      }
+    });
+
+    if (!reducedMotion) {
+      if (!rafHandle) rafHandle = requestAnimationFrame(tick);
+    } else {
+      cancelAnimationFrame(rafHandle);
+      rafHandle = 0;
+    }
   }
 
   addButton.addEventListener("click", () => store.add(randomWindow()));
@@ -142,10 +192,10 @@ export function mountApp(root: HTMLElement): void {
     );
   }
 
-  function setHovered(id: string | null, windows: TileWindow[]): void {
+  function setHovered(id: string | null): void {
     if (id === hoveredId) return;
     hoveredId = id;
-    PANES.forEach((pane) => paintPane(pane, windows.length));
+    paintIdle();
   }
 
   PANES.forEach((pane) => {
@@ -160,18 +210,17 @@ export function mountApp(root: HTMLElement): void {
       dragWindowId = hitId;
       dragPaneId = pane.id;
       canvas.setPointerCapture(event.pointerId);
-      setHovered(hitId, store.getWindows());
+      setHovered(hitId);
     });
 
     canvas.addEventListener("pointermove", (event) => {
       if (dragPaneId !== null) {
-        if (dragPaneId === pane.id)
-          setHovered(dragWindowId, store.getWindows());
+        if (dragPaneId === pane.id) setHovered(dragWindowId);
         return;
       }
       const rects = paneRects.get(pane.id) ?? [];
       const point = pointerPoint(event, canvas);
-      setHovered(findRectAt(rects, point), store.getWindows());
+      setHovered(findRectAt(rects, point));
     });
 
     canvas.addEventListener("pointerup", (event) => {
@@ -183,26 +232,26 @@ export function mountApp(root: HTMLElement): void {
       store.moveWindow(dragWindowId, point.x, point.y);
       dragWindowId = null;
       dragPaneId = null;
-      setHovered(null, store.getWindows());
+      setHovered(null);
     });
 
     canvas.addEventListener("pointercancel", () => {
       if (dragPaneId !== pane.id) return;
       dragWindowId = null;
       dragPaneId = null;
-      setHovered(null, store.getWindows());
+      setHovered(null);
     });
 
     canvas.addEventListener("pointerleave", () => {
       if (dragPaneId !== null) return;
-      setHovered(null, store.getWindows());
+      setHovered(null);
     });
   });
 
   let resizeFrame = 0;
   window.addEventListener("resize", () => {
     cancelAnimationFrame(resizeFrame);
-    resizeFrame = requestAnimationFrame(() => render(store.getWindows()));
+    resizeFrame = requestAnimationFrame(() => paintIdle());
   });
 }
 
