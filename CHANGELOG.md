@@ -3,7 +3,10 @@
 All notable changes to this project are documented here. Format loosely
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.0.0] - 2026-07-10
+
+First public release. Ships as **Reflow** (the project began under the
+working title Tiler; the repo slug stays `tiler`).
 
 ### Added
 
