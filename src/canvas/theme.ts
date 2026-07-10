@@ -7,4 +7,7 @@ export const theme = {
   text: "#dce8ec",
   textMuted: "#6f8894",
   gridStep: 8,
+  highlightStroke: "#e0a53f",
+  highlightFill: "rgba(224, 165, 63, 0.14)",
+  highlightGlow: "rgba(224, 165, 63, 0.55)",
 } as const;
