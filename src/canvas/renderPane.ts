@@ -2,6 +2,9 @@ import type { TileRect } from "../types";
 import { toPixelRect } from "./layout";
 import { theme } from "./theme";
 
+/** A tile rect with an optional render-time opacity, for fading during reflow tweens. */
+export type DrawableRect = TileRect & { opacity?: number };
+
 export interface PaneOptions {
   stamp: string;
   count: number;
@@ -30,7 +33,7 @@ function drawGrid(
 
 function drawRect(
   ctx: CanvasRenderingContext2D,
-  rect: TileRect,
+  rect: DrawableRect,
   width: number,
   height: number,
   highlighted: boolean,
@@ -39,6 +42,7 @@ function drawRect(
   const inset = 1.5;
 
   ctx.save();
+  ctx.globalAlpha = rect.opacity ?? 1;
   if (highlighted) {
     ctx.shadowColor = theme.highlightGlow;
     ctx.shadowBlur = 12;
@@ -115,7 +119,7 @@ function drawStamp(
  */
 export function renderPane(
   canvas: HTMLCanvasElement,
-  rects: TileRect[],
+  rects: DrawableRect[],
   options: PaneOptions,
 ): void {
   const ctx = canvas.getContext("2d");
