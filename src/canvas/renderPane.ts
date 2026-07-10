@@ -60,6 +60,19 @@ function drawRect(
   }
 }
 
+function drawEmptyState(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+): void {
+  ctx.fillStyle = theme.textMuted;
+  ctx.font = "12px 'Inter', system-ui, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("no windows — add one to begin", width / 2, height / 2);
+  ctx.textAlign = "left";
+}
+
 function drawStamp(
   ctx: CanvasRenderingContext2D,
   options: PaneOptions,
@@ -109,6 +122,10 @@ export function renderPane(
   ctx.fillStyle = theme.surface;
   ctx.fillRect(0, 0, cssWidth, cssHeight);
   drawGrid(ctx, cssWidth, cssHeight);
-  rects.forEach((rect) => drawRect(ctx, rect, cssWidth, cssHeight));
+  if (rects.length === 0) {
+    drawEmptyState(ctx, cssWidth, cssHeight);
+  } else {
+    rects.forEach((rect) => drawRect(ctx, rect, cssWidth, cssHeight));
+  }
   drawStamp(ctx, options, cssWidth, cssHeight);
 }
