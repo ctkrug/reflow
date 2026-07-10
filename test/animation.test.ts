@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_DURATIONS,
+  beginTransition,
   diffRects,
+  sampleAnimation,
   sampleTransition,
+  targetRects,
   type RectTransition,
 } from "../src/canvas/animation";
 import type { TileRect } from "../src/types";
@@ -69,5 +72,46 @@ describe("sampleTransition", () => {
 
   it("returns null for a transition with neither from nor to", () => {
     expect(sampleTransition({ id: "x", from: null, to: null }, 0)).toBeNull();
+  });
+});
+
+describe("beginTransition/sampleAnimation", () => {
+  it("samples an in-progress move as not done", () => {
+    const state = beginTransition([RECT_A], [RECT_A_MOVED], 1000);
+    const frame = sampleAnimation(state, 1000 + DEFAULT_DURATIONS.moveMs / 2);
+    expect(frame.done).toBe(false);
+    expect(frame.rects).toHaveLength(1);
+  });
+
+  it("marks the frame done once every transition duration has elapsed", () => {
+    const state = beginTransition([RECT_A], [RECT_A_MOVED], 1000);
+    const frame = sampleAnimation(state, 1000 + DEFAULT_DURATIONS.moveMs);
+    expect(frame.done).toBe(true);
+    expect(frame.rects).toEqual([{ ...RECT_A_MOVED, opacity: 1 }]);
+  });
+
+  it("drops fully-faded removed rects from the sampled frame", () => {
+    const state = beginTransition([RECT_A, RECT_B], [RECT_B], 0);
+    const frame = sampleAnimation(state, DEFAULT_DURATIONS.removeMs);
+    expect(frame.rects.map((r) => r.id)).toEqual(["b"]);
+  });
+
+  it("is immediately done for an unchanged (empty) transition set", () => {
+    const state = beginTransition([], [], 0);
+    expect(sampleAnimation(state, 0).done).toBe(true);
+  });
+});
+
+describe("targetRects", () => {
+  it("returns only the rects a transition is heading toward", () => {
+    const state = beginTransition([RECT_A], [RECT_A_MOVED, RECT_B], 0);
+    expect(targetRects(state)).toEqual(
+      expect.arrayContaining([RECT_A_MOVED, RECT_B]),
+    );
+  });
+
+  it("excludes rects that are being removed (no to-rect)", () => {
+    const state = beginTransition([RECT_A], [], 0);
+    expect(targetRects(state)).toEqual([]);
   });
 });
