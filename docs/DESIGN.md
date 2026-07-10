@@ -1,15 +1,15 @@
-# Design — Tiler
+# Design — Reflow
 
 ## 1. Aesthetic direction
 
-**Blueprint/technical.** Tiler is a tool for people who already love tiling
+**Blueprint/technical.** Reflow is a tool for people who already love tiling
 window managers — a keyboard-driven, dotfiles-tinkering, "I rice my i3
 config" audience. The UI reads like an architectural blueprint: fine grid
 paper, cyan linework on a near-black ground, rectangles annotated with their
 coordinates, corner tick marks like a drafting tool. It should feel like
 you're looking at the _schematic_ of a window layout, not a toy.
 
-One sentence: _Tiler is a blueprint — cyan linework and grid paper on a
+One sentence: _Reflow is a blueprint — cyan linework and grid paper on a
 near-black sheet, every window rectangle labeled like a drafted plan._
 
 ## 2. Tokens
@@ -82,6 +82,6 @@ canvases into one coherent "sheet."
 - **Selection feedback:** hovering a window rectangle in any pane
   highlights the _same window id_ across all four panes simultaneously
   (thin amber outline) — this is the comparison payoff, made visible.
-- No sound is planned for v1 (Tiler is a precision tool, not a toy) — skip
+- No sound is planned for v1 (Reflow is a precision tool, not a toy) — skip
   the synth SFX list; if a future pass adds audio it must follow the same
   synthesized-WebAudio + mute-toggle rule as any other project.

@@ -152,7 +152,7 @@ wordmark treatment.
 
 - `index.html` references a favicon that is not the default browser globe
   and uses the DESIGN.md accent color.
-- The "Tiler" wordmark in the page header uses the display font with
+- The "Reflow" wordmark in the page header uses the display font with
   intentional weight/spacing, not a plain `<h1>` in body text.
 
 ### [x] 3.4 Static build verified deployable to a subpath

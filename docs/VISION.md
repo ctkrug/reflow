@@ -1,4 +1,4 @@
-# Vision — Tiler
+# Vision — Reflow
 
 ## The problem
 
@@ -40,7 +40,7 @@ recursively.
 - **Normalized coordinates.** Windows and rects live in `[0, 1]` space, not
   pixels, so every pane (and any future export/resize) can scale
   independently from the underlying geometry.
-- **No server, no persistence.** Tiler is a single static page — all state
+- **No server, no persistence.** Reflow is a single static page — all state
   lives in memory for the session. Nothing to install, nothing to save;
   drop windows and explore.
 - **Blueprint visual language** (see `docs/DESIGN.md`) reinforces that this

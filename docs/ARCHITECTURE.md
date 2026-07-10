@@ -1,4 +1,4 @@
-# Architecture — Tiler
+# Architecture — Reflow
 
 A concise map of the codebase for anyone picking this up cold.
 
