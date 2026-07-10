@@ -215,6 +215,7 @@ export function mountApp(root: HTMLElement): void {
     if (!canvas) return;
 
     canvas.addEventListener("pointerdown", (event) => {
+      if (dragWindowId !== null) return; // a second finger/pointer can't hijack an in-flight drag
       const rects = paneRects.get(pane.id) ?? [];
       const point = pointerPoint(event, canvas);
       const hitId = findRectAt(rects, point);
