@@ -5,7 +5,7 @@ checkable acceptance criteria — no vibes.
 
 ## Epic 1 — Core tiling engines & live canvas (the wow moment)
 
-### [ ] 1.1 Four-pane live comparison canvas — **WOW MOMENT**
+### [x] 1.1 Four-pane live comparison canvas — **WOW MOMENT**
 
 Drop five rectangles onto the canvas and see all four algorithms (BSP,
 spiral, master-stack, dwindle) lay them out simultaneously, side by side,
