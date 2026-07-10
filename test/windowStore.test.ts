@@ -137,4 +137,72 @@ describe("WindowStore", () => {
       expect(listener).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe("moveByOffset", () => {
+    it("moves a window later in the order by a positive offset", () => {
+      const a = createWindow(0, 0, 1, 1);
+      const b = createWindow(0, 0, 1, 1);
+      const c = createWindow(0, 0, 1, 1);
+      const store = new WindowStore([a, b, c]);
+
+      store.moveByOffset(a.id, 1);
+
+      expect(store.getWindows().map((w) => w.id)).toEqual([b.id, a.id, c.id]);
+    });
+
+    it("moves a window earlier in the order by a negative offset", () => {
+      const a = createWindow(0, 0, 1, 1);
+      const b = createWindow(0, 0, 1, 1);
+      const c = createWindow(0, 0, 1, 1);
+      const store = new WindowStore([a, b, c]);
+
+      store.moveByOffset(c.id, -1);
+
+      expect(store.getWindows().map((w) => w.id)).toEqual([a.id, c.id, b.id]);
+    });
+
+    it("clamps at the end of the list instead of going out of bounds", () => {
+      const a = createWindow(0, 0, 1, 1);
+      const b = createWindow(0, 0, 1, 1);
+      const store = new WindowStore([a, b]);
+
+      store.moveByOffset(b.id, 5);
+
+      expect(store.getWindows().map((w) => w.id)).toEqual([a.id, b.id]);
+    });
+
+    it("clamps at the start of the list instead of going out of bounds", () => {
+      const a = createWindow(0, 0, 1, 1);
+      const b = createWindow(0, 0, 1, 1);
+      const store = new WindowStore([a, b]);
+
+      store.moveByOffset(a.id, -5);
+
+      expect(store.getWindows().map((w) => w.id)).toEqual([a.id, b.id]);
+    });
+
+    it("is a no-op for an id that isn't present", () => {
+      const a = createWindow(0, 0, 1, 1);
+      const store = new WindowStore([a]);
+      const listener = vi.fn();
+      store.subscribe(listener);
+
+      store.moveByOffset("ghost", 1);
+
+      expect(store.getWindows()).toEqual([a]);
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not notify subscribers when already at the clamped destination", () => {
+      const a = createWindow(0, 0, 1, 1);
+      const b = createWindow(0, 0, 1, 1);
+      const store = new WindowStore([a, b]);
+      const listener = vi.fn();
+      store.subscribe(listener);
+
+      store.moveByOffset(b.id, 1);
+
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+  });
 });

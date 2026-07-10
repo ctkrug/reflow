@@ -56,6 +56,30 @@ export class WindowStore {
     this.emit();
   }
 
+  /**
+   * Moves `id` earlier (negative offset) or later (positive offset) in the
+   * shared order by `offset` slots, clamping at the list's ends. This is the
+   * keyboard-accessible equivalent of drag-to-reorder, since every tiling
+   * algorithm reads order, not raw coordinates. No-op when the id is
+   * missing or already at the clamped destination.
+   */
+  moveByOffset(id: string, offset: number): void {
+    const index = this.windows.findIndex((w) => w.id === id);
+    if (index === -1) return;
+
+    const targetIndex = Math.min(
+      Math.max(index + offset, 0),
+      this.windows.length - 1,
+    );
+    if (targetIndex === index) return;
+
+    const next = [...this.windows];
+    const [item] = next.splice(index, 1);
+    next.splice(targetIndex, 0, item);
+    this.windows = next;
+    this.emit();
+  }
+
   /** Subscribes to changes, firing once immediately with the current list. */
   subscribe(listener: Listener): () => void {
     this.listeners.add(listener);
