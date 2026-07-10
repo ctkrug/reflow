@@ -100,3 +100,52 @@ export function sampleTransition(
 
   return null;
 }
+
+/** A pane's in-flight transition set, anchored to a start timestamp. */
+export interface PaneAnimationState {
+  transitions: RectTransition[];
+  startedAt: number;
+}
+
+/** Begins tweening a pane from its previous tiling to its next one at time `now`. */
+export function beginTransition(
+  previous: TileRect[],
+  next: TileRect[],
+  now: number,
+): PaneAnimationState {
+  return { transitions: diffRects(previous, next), startedAt: now };
+}
+
+export interface AnimationFrame {
+  rects: RenderRect[];
+  /** True once every transition (move/add/remove) has finished. */
+  done: boolean;
+}
+
+/** Samples every transition in a pane's animation state at time `now`. */
+export function sampleAnimation(
+  state: PaneAnimationState,
+  now: number,
+  durations: TweenDurations = DEFAULT_DURATIONS,
+): AnimationFrame {
+  const elapsed = now - state.startedAt;
+  const rects: RenderRect[] = [];
+  for (const transition of state.transitions) {
+    const sampled = sampleTransition(transition, elapsed, durations);
+    if (sampled) rects.push(sampled);
+  }
+
+  const maxDuration = Math.max(
+    durations.moveMs,
+    durations.addMs,
+    durations.removeMs,
+  );
+  return { rects, done: elapsed >= maxDuration };
+}
+
+/** The final (post-transition) rects a pane's animation state is tweening toward. */
+export function targetRects(state: PaneAnimationState): TileRect[] {
+  return state.transitions
+    .filter((t): t is RectTransition & { to: TileRect } => t.to !== null)
+    .map((t) => t.to);
+}
