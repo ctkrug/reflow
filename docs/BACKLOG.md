@@ -61,7 +61,7 @@ Implement dwindle (halving) tiling as a pure function.
   overlaps (checked via summed area).
 - Unit tests cover N = 0, 1, 2, 5 windows.
 
-### [ ] 1.6 Add/remove windows via UI controls
+### [x] 1.6 Add/remove windows via UI controls
 
 A toolbar lets the user add a window and remove the most recently added
 one, driving the shared window list all four panes consume.
