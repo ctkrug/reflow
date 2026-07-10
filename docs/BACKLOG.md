@@ -86,7 +86,7 @@ in the shared state and re-tiles all four panes.
   `[0,1]×[0,1]` rather than losing it off-canvas.
 - Drag start/end are both mouse- and touch-driven (works on a touchscreen).
 
-### [ ] 2.2 Cross-pane window highlight
+### [x] 2.2 Cross-pane window highlight
 
 Hovering a window rectangle in one pane highlights the same window's
 rectangle (by id) in the other three panes simultaneously.
