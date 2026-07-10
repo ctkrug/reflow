@@ -79,8 +79,15 @@ function paneMarkup(pane: PaneConfig): string {
 export function mountApp(root: HTMLElement): void {
   root.innerHTML = `
     <header class="app-header">
-      <p class="wordmark">TILER<span class="wordmark-accent">_</span></p>
-      <p class="tagline">Four tiling algorithms, one shared window list, live.</p>
+      <p class="wordmark">REFLOW<span class="wordmark-accent">_</span></p>
+      <p class="tagline">Four tiling window managers, one window list, reflowing live.</p>
+      <a
+        class="gh-link"
+        href="https://github.com/ctkrug/tiler"
+        target="_blank"
+        rel="noopener"
+        >View on GitHub ↗</a
+      >
     </header>
     <div class="toolbar">
       <button id="add-window" type="button" class="btn btn-primary">+ Add window</button>
