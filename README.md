@@ -33,13 +33,12 @@ out simultaneously as you add, remove, and drag windows around.
 - Per-algorithm labeled panes with a live rect count, styled as a
   blueprint's corner title-block stamp
 - Responsive 2×2 grid on desktop that stacks to one column on phone
-
-## Planned
-
-- Drag a window in any pane to reposition it, reflowing all four panes live
-- Cross-pane highlight: hovering a window in one pane highlights the same
-  window everywhere else
-- Tweened reflow/add/remove animation instead of instant redraws
+- Drag a window in any pane onto another to reorder it, reflowing all four
+  panes live — works with mouse or touch
+- Cross-pane highlight: hovering (or dragging) a window in one pane
+  highlights the same window everywhere else
+- Tweened reflow/add/remove animation (ease-out, ~100-140ms), skipped
+  entirely for `prefers-reduced-motion: reduce`
 
 ## Stack
 
@@ -51,8 +50,9 @@ out simultaneously as you add, remove, and drag windows around.
 
 ## Status
 
-The core comparison engine is live: `npm run dev` opens straight into the
-four-pane grid, seeded with windows, ready to add/remove and compare. See
+The full comparison engine is live: `npm run dev` opens straight into the
+four-pane grid, seeded with windows, ready to add, remove, drag-to-reorder,
+and hover-highlight across all four panes at once. See
 [`docs/VISION.md`](docs/VISION.md), [`docs/DESIGN.md`](docs/DESIGN.md),
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), and
 [`docs/BACKLOG.md`](docs/BACKLOG.md) for the plan and what's left.
