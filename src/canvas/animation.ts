@@ -144,10 +144,3 @@ export function sampleAnimation(
   );
   return { rects, done: elapsed >= maxDuration };
 }
-
-/** The final (post-transition) rects a pane's animation state is tweening toward. */
-export function targetRects(state: PaneAnimationState): TileRect[] {
-  return state.transitions
-    .filter((t): t is RectTransition & { to: TileRect } => t.to !== null)
-    .map((t) => t.to);
-}

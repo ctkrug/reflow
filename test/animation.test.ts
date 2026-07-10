@@ -5,7 +5,6 @@ import {
   diffRects,
   sampleAnimation,
   sampleTransition,
-  targetRects,
   type RectTransition,
 } from "../src/canvas/animation";
 import type { TileRect } from "../src/types";
@@ -99,19 +98,5 @@ describe("beginTransition/sampleAnimation", () => {
   it("is immediately done for an unchanged (empty) transition set", () => {
     const state = beginTransition([], [], 0);
     expect(sampleAnimation(state, 0).done).toBe(true);
-  });
-});
-
-describe("targetRects", () => {
-  it("returns only the rects a transition is heading toward", () => {
-    const state = beginTransition([RECT_A], [RECT_A_MOVED, RECT_B], 0);
-    expect(targetRects(state)).toEqual(
-      expect.arrayContaining([RECT_A_MOVED, RECT_B]),
-    );
-  });
-
-  it("excludes rects that are being removed (no to-rect)", () => {
-    const state = beginTransition([RECT_A], [], 0);
-    expect(targetRects(state)).toEqual([]);
   });
 });
