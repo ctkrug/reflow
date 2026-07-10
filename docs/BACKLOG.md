@@ -152,7 +152,7 @@ wordmark treatment.
 - The "Tiler" wordmark in the page header uses the display font with
   intentional weight/spacing, not a plain `<h1>` in body text.
 
-### [ ] 3.4 Static build verified deployable to a subpath
+### [x] 3.4 Static build verified deployable to a subpath
 
 Confirm the production build works when served from a non-root path, as
 it will be at `apps.charliekrug.com/tiler`.
