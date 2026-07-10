@@ -1,4 +1,6 @@
+import { clampUnit } from "../interaction/clamp";
 import type { TileWindow } from "../types";
+import { reorderWindows } from "./reorder";
 
 type Listener = (windows: TileWindow[]) => void;
 
@@ -27,6 +29,30 @@ export class WindowStore {
   removeLast(): void {
     if (this.windows.length === 0) return;
     this.windows = this.windows.slice(0, -1);
+    this.emit();
+  }
+
+  /**
+   * Updates a window's position, clamping both axes into [0, 1] so a drag
+   * released outside the canvas bounds can't lose the window off-screen.
+   * A no-op when the id isn't present.
+   */
+  moveWindow(id: string, x: number, y: number): void {
+    const index = this.windows.findIndex((w) => w.id === id);
+    if (index === -1) return;
+
+    const next = [...this.windows];
+    next[index] = { ...next[index], x: clampUnit(x), y: clampUnit(y) };
+    this.windows = next;
+    this.emit();
+  }
+
+  /** Moves `draggedId` to sit before `targetId`'s slot. No-op when either id is missing. */
+  reorder(draggedId: string, targetId: string): void {
+    const next = reorderWindows(this.windows, draggedId, targetId);
+    if (next === this.windows) return;
+
+    this.windows = next;
     this.emit();
   }
 
