@@ -18,7 +18,7 @@ in one page.
 - Works with zero setup: `npm run dev` and the four-pane grid is the first
   thing rendered, no extra clicks to reach it.
 
-### [ ] 1.2 BSP tiling algorithm
+### [x] 1.2 BSP tiling algorithm
 
 Implement binary-space-partition tiling as a pure function.
 
