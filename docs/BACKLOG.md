@@ -96,7 +96,7 @@ rectangle (by id) in the other three panes simultaneously.
   time.
 - Moving the mouse off all panes clears every highlight.
 
-### [ ] 2.3 Per-pane title-block labels + live rect count
+### [x] 2.3 Per-pane title-block labels + live rect count
 
 Each of the four panes is labeled with its algorithm name and a live count
 of tiled windows, per the DESIGN.md signature-detail spec.
