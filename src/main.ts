@@ -37,6 +37,18 @@ function randomWindow(): TileWindow {
   return createWindow(x, y, width, height);
 }
 
+function requireElement<T extends Element>(
+  root: ParentNode,
+  selector: string,
+  ctor: new () => T,
+): T {
+  const el = root.querySelector(selector);
+  if (!(el instanceof ctor)) {
+    throw new Error(`Tiler: expected "${selector}" to be present in the mounted markup`);
+  }
+  return el;
+}
+
 function paneMarkup(pane: PaneConfig): string {
   return `
     <section class="pane" aria-label="${pane.label} layout">
@@ -61,16 +73,9 @@ export function mountApp(root: HTMLElement): void {
     </main>
   `;
 
-  const addButton = root.querySelector("#add-window");
-  const removeButton = root.querySelector("#remove-window");
-  const countLabel = root.querySelector("#window-count");
-  if (
-    !(addButton instanceof HTMLButtonElement) ||
-    !(removeButton instanceof HTMLButtonElement) ||
-    !(countLabel instanceof HTMLElement)
-  ) {
-    throw new Error("Tiler: expected toolbar controls were not found in the mounted markup");
-  }
+  const addButton = requireElement(root, "#add-window", HTMLButtonElement);
+  const removeButton = requireElement(root, "#remove-window", HTMLButtonElement);
+  const countLabel = requireElement(root, "#window-count", HTMLElement);
 
   const canvases = new Map<string, HTMLCanvasElement>();
   PANES.forEach((pane) => {
