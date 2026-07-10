@@ -8,7 +8,7 @@ A concise map of the codebase for anyone picking this up cold.
 WindowStore (src/tiling/windowStore.ts)
   holds the single TileWindow[] list
         │
-        │ subscribe() fires on every add()/removeLast()
+        │ subscribe() fires on every add()/removeLast()/moveWindow()/reorder()
         ▼
 main.ts render(windows)
         │
@@ -17,14 +17,28 @@ main.ts render(windows)
 tiling algorithm (bsp | spiral | masterStack | dwindle)
   pure function: TileWindow[] -> TileRect[]
         │
+        │ beginTransition(previousRects, nextRects, now)
+        ▼
+per-pane animation state (src/canvas/animation.ts)
+  a single rAF loop samples every pane each frame (sampleAnimation)
+        │
         ▼
 renderPane (src/canvas/renderPane.ts)
-  draws the grid, rects, and corner stamp onto that pane's <canvas>
+  draws the grid, rects (at their tweened position/opacity), the
+  cross-pane highlight, and the corner stamp onto that pane's <canvas>
+        ▲
+        │ pointerdown/move/up on a pane's canvas
+        │ (src/interaction/hitTest.ts + pointer.ts)
+main.ts drag/hover wiring ──► store.reorder() / store.moveWindow()
 ```
 
 Everything downstream of `WindowStore` is a pure function of the current
 window list — no pane keeps its own copy of state, so the four panes can
-never drift out of sync with each other or with what the user did.
+never drift out of sync with each other or with what the user did. All
+four tiling algorithms are **order-driven, not position-driven**: they
+read `windows` insertion order, not `x`/`y`. That's why dragging one
+window onto another (a reorder) is what makes a drag visibly reflow every
+pane, not a free-form move of raw coordinates.
 
 ## Modules
 
@@ -35,34 +49,62 @@ never drift out of sync with each other or with what the user did.
   place window ids are minted.
 - **`src/tiling/windowStore.ts`** — `WindowStore`: the shared, observable
   window list. `add`/`removeLast` mutate it and notify subscribers;
-  `subscribe` fires immediately with the current snapshot, then again on
-  every change.
+  `moveWindow(id, x, y)` clamps a dragged window's dropped position into
+  `[0,1]`; `reorder(draggedId, targetId)` moves a window before another's
+  slot (via `reorderWindows`); `subscribe` fires immediately with the
+  current snapshot, then again on every change.
+- **`src/tiling/reorder.ts`** — `reorderWindows`: pure array-reorder used
+  by drag-to-reposition, since every algorithm below is order-driven.
 - **`src/tiling/bsp.ts`, `spiral.ts`, `masterStack.ts`, `dwindle.ts`** — the
   four tiling algorithms. Each is a pure `(windows) => rects` function with
   no DOM/canvas dependency, so they're unit-tested (`test/*.test.ts`) in
   isolation via geometric properties (full coverage, no overlaps) rather
   than pixel snapshots. `test/geometry.ts` holds the shared assertion
   helpers (`assertTilesUnitSquare`).
+- **`src/interaction/clamp.ts`** — `clampUnit`: clamps a value into `[0,1]`.
+- **`src/interaction/hitTest.ts`** — `findRectAt` (which rect, if any, a
+  point is inside — drag start) and `nearestRectId` (the closest other
+  rect to a point, excluding one id — drop target), both pure geometry
+  over `TileRect[]`.
+- **`src/interaction/pointer.ts`** — `normalizedPoint`: maps a client-space
+  pointer coordinate into normalized `[0,1]` space given an element's
+  bounding box, as plain arithmetic (no DOMRect dependency, so testable).
+- **`src/canvas/easing.ts`** — `easeOutCubic`, shared by all reflow tweens.
+- **`src/canvas/animation.ts`** — the tween engine, entirely pure/testable
+  (time is always passed in, never read from the clock):
+  `diffRects(previous, next)` classifies every window id as moved/added/
+  removed; `sampleTransition` renders one id's transition at an elapsed
+  time (move: ease-out lerp, add/remove: scale+fade); `beginTransition`/
+  `sampleAnimation` wrap those into the per-pane state `main.ts` drives
+  from a single `requestAnimationFrame` loop, so all four panes tween in
+  lockstep and read as one simultaneous event.
 - **`src/canvas/layout.ts`** — `toPixelRect`, the one piece of rendering
   math (normalized rect → CSS pixel rect) worth unit-testing on its own,
   kept separate from the canvas-drawing calls that need a real DOM.
 - **`src/canvas/theme.ts`** — canvas-side color/spacing tokens mirroring
   the CSS custom properties in `src/style.css`, so canvas drawing and CSS
-  styling read from the same blueprint palette.
+  styling read from the same blueprint palette (including the amber
+  highlight tokens for the cross-pane hover/drag state).
 - **`src/canvas/renderPane.ts`** — `renderPane(canvas, rects, options)`:
   sizes the canvas backing store to `devicePixelRatio`, draws the
-  grid-paper background, each rect (or a designed empty-state prompt when
-  there are none), and the corner title-block stamp (algorithm name + live
-  count). Not unit-tested — it's a thin, DOM-dependent drawing layer over
-  the tested `toPixelRect`.
+  grid-paper background, each rect at its given opacity (or a designed
+  empty-state prompt when there are none) with the amber highlight style
+  when its id matches `options.highlightId`, and the corner title-block
+  stamp (algorithm name + live count). Not unit-tested — it's a thin,
+  DOM-dependent drawing layer over the tested `toPixelRect`.
 - **`src/main.ts`** — `mountApp(root)`: builds the toolbar + 4-pane grid
   markup, wires add/remove buttons to the `WindowStore`, subscribes to
-  re-render all four panes on every change, and re-renders on window
-  resize (debounced via `requestAnimationFrame`).
+  begin a tweened transition on every change, drives the shared rAF loop,
+  wires pointerdown/move/up/cancel/leave on each pane's canvas for
+  drag-to-reorder and cross-pane hover highlight, and repaints on window
+  resize. Checks `prefers-reduced-motion` once at mount (and on change)
+  and skips tweening entirely when set, painting the settled layout
+  instantly.
 - **`src/style.css`** — the blueprint visual system: CSS custom properties
   for every token in `docs/DESIGN.md`, the grid-paper body background,
-  themed button states (hover/focus-visible/active/disabled), and the
-  responsive 2×2-desktop / stacked-phone pane grid.
+  themed button states (hover/focus-visible/active/disabled), the
+  responsive 2×2-desktop / stacked-phone pane grid, and `touch-action:
+  none` + grab/grabbing cursors on the pane canvases for dragging.
 
 ## How to run / test
 
@@ -82,12 +124,11 @@ npm run build         # tsc --noEmit && vite build -> dist/
   `TilingAlgorithm`, add its tests, then add one entry to the `PANES` array
   in `main.ts` (label, corner stamp, algorithm reference) — the grid,
   toolbar, and store wiring need no changes.
-- **Drag-to-reposition / cross-pane highlight** (backlog 2.1, 2.2): both
-  need per-window interaction state that doesn't exist yet — likely a
-  `hoveredId`/`draggingId` field threaded from a shared pointer-tracking
-  layer into `renderPane`'s draw calls.
-- **Tweened reflow (backlog 3.2)**: `renderPane` currently redraws
-  instantly from whatever rects it's given; animating means interpolating
-  between the previous and next rect for each window id across a few
-  `requestAnimationFrame` ticks before calling `renderPane`, which itself
-  stays a stateless "draw these exact rects" function.
+- **A position-aware algorithm**: today all four algorithms ignore
+  `TileWindow.x/y` (order-driven only) even though `moveWindow` persists a
+  dragged window's dropped position. An algorithm that wants to use it can
+  read `windows[i].x/y` directly — the store already carries it.
+- **Tuning the reflow tween**: `src/canvas/animation.ts`'s
+  `DEFAULT_DURATIONS` controls move/add/remove timing; everything else in
+  that module takes an explicit `now`/`elapsedMs`, so tests exercise exact
+  frames without fake timers.
