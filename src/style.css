@@ -91,6 +91,10 @@ body {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 0.875rem;
