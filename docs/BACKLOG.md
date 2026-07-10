@@ -40,7 +40,7 @@ Implement spiral (fibonacci-style) tiling as a pure function.
 - Unit tests cover N = 0, 1, 2, 5 windows and assert the rotation order of
   at least one 4-window case.
 
-### [ ] 1.4 Master-stack tiling algorithm
+### [x] 1.4 Master-stack tiling algorithm
 
 Implement master-pane + stack tiling as a pure function.
 
