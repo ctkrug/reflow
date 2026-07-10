@@ -46,8 +46,9 @@ out simultaneously as you add, remove, and drag windows around.
 
 ## Status
 
-Early scaffold — see [`docs/VISION.md`](docs/VISION.md) and
-[`docs/BACKLOG.md`](docs/BACKLOG.md) for the plan.
+Early scaffold — see [`docs/VISION.md`](docs/VISION.md),
+[`docs/DESIGN.md`](docs/DESIGN.md), and [`docs/BACKLOG.md`](docs/BACKLOG.md)
+for the plan.
 
 ## Development
 
