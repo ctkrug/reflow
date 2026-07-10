@@ -85,6 +85,9 @@ in the shared state and re-tiles all four panes.
 - Releasing outside the canvas bounds clamps the window back into
   `[0,1]×[0,1]` rather than losing it off-canvas.
 - Drag start/end are both mouse- and touch-driven (works on a touchscreen).
+- Reordering is also keyboard-accessible: Tab into a pane, arrow keys
+  select a window, Enter/Space picks it up, arrow keys reorder it, and
+  Enter/Escape drops or cancels — each step announced via a live region.
 
 ### [x] 2.2 Cross-pane window highlight
 
