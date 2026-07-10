@@ -51,8 +51,10 @@ pane, not a free-form move of raw coordinates.
   window list. `add`/`removeLast` mutate it and notify subscribers;
   `moveWindow(id, x, y)` clamps a dragged window's dropped position into
   `[0,1]`; `reorder(draggedId, targetId)` moves a window before another's
-  slot (via `reorderWindows`); `subscribe` fires immediately with the
-  current snapshot, then again on every change.
+  slot (via `reorderWindows`); `moveByOffset(id, offset)` moves a window
+  earlier/later by a relative slot count, clamped at the list ends — the
+  keyboard-reorder equivalent of `reorder`; `subscribe` fires immediately
+  with the current snapshot, then again on every change.
 - **`src/tiling/reorder.ts`** — `reorderWindows`: pure array-reorder used
   by drag-to-reposition, since every algorithm below is order-driven.
 - **`src/tiling/bsp.ts`, `spiral.ts`, `masterStack.ts`, `dwindle.ts`** — the
@@ -99,7 +101,14 @@ pane, not a free-form move of raw coordinates.
   drag-to-reorder and cross-pane hover highlight, and repaints on window
   resize. Checks `prefers-reduced-motion` once at mount (and on change)
   and skips tweening entirely when set, painting the settled layout
-  instantly.
+  instantly. Each pane canvas is also `tabindex="0"` with a `keydown`
+  handler: arrow keys cycle the selected window (reusing the same
+  `hoveredId` state that drives cross-pane highlight, so keyboard
+  selection highlights identically to hover), Enter/Space toggles a
+  "grabbed" id, arrow keys while grabbed call `store.moveByOffset`, and
+  Enter/Escape drops or cancels. A visually-hidden `#kbd-status` live
+  region (`.sr-only` in `style.css`) announces each step for screen
+  readers; `focusout` releases any in-progress grab/selection.
 - **`src/style.css`** — the blueprint visual system: CSS custom properties
   for every token in `docs/DESIGN.md`, the grid-paper body background,
   themed button states (hover/focus-visible/active/disabled), the
