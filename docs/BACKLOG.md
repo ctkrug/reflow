@@ -130,7 +130,7 @@ across the whole app.
 - Every interactive control (add/remove buttons) has distinct hover,
   focus-visible, active, and disabled states.
 
-### [ ] 3.2 Reflow, add, and remove animation
+### [x] 3.2 Reflow, add, and remove animation
 
 Implement the juice plan's tweens for layout changes.
 
