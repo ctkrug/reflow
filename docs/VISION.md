@@ -15,7 +15,7 @@ remove, and drag windows around.
 People who already use or are curious about tiling window managers —
 Linux/BSD desktop tinkerers, terminal-first developers, the r/unixporn
 crowd — plus anyone learning computational geometry/layout algorithms who
-wants to *see* BSP, spiral, master-stack, and dwindle tiling behave instead
+wants to _see_ BSP, spiral, master-stack, and dwindle tiling behave instead
 of reading pseudocode.
 
 ## The core idea

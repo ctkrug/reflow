@@ -7,25 +7,25 @@ window managers — a keyboard-driven, dotfiles-tinkering, "I rice my i3
 config" audience. The UI reads like an architectural blueprint: fine grid
 paper, cyan linework on a near-black ground, rectangles annotated with their
 coordinates, corner tick marks like a drafting tool. It should feel like
-you're looking at the *schematic* of a window layout, not a toy.
+you're looking at the _schematic_ of a window layout, not a toy.
 
-One sentence: *Tiler is a blueprint — cyan linework and grid paper on a
-near-black sheet, every window rectangle labeled like a drafted plan.*
+One sentence: _Tiler is a blueprint — cyan linework and grid paper on a
+near-black sheet, every window rectangle labeled like a drafted plan._
 
 ## 2. Tokens
 
-| Token | Value | Use |
-|---|---|---|
-| `--bg` | `#0a0e12` | page background |
-| `--surface-1` | `#0f151b` | panel background (each algorithm pane) |
-| `--surface-2` | `#141c24` | raised surface (toolbar, cards) |
-| `--text` | `#dce8ec` | primary text |
-| `--text-muted` | `#6f8894` | secondary/labels |
-| `--accent` | `#3fd0e0` | cyan — active lines, primary actions |
-| `--accent-support` | `#e0a53f` | amber — highlight/selection, drag state |
-| `--success` | `#4fd68c` | valid state |
-| `--danger` | `#e0623f` | invalid/error state |
-| `--grid-line` | `rgba(63, 208, 224, 0.08)` | blueprint grid overlay |
+| Token              | Value                      | Use                                     |
+| ------------------ | -------------------------- | --------------------------------------- |
+| `--bg`             | `#0a0e12`                  | page background                         |
+| `--surface-1`      | `#0f151b`                  | panel background (each algorithm pane)  |
+| `--surface-2`      | `#141c24`                  | raised surface (toolbar, cards)         |
+| `--text`           | `#dce8ec`                  | primary text                            |
+| `--text-muted`     | `#6f8894`                  | secondary/labels                        |
+| `--accent`         | `#3fd0e0`                  | cyan — active lines, primary actions    |
+| `--accent-support` | `#e0a53f`                  | amber — highlight/selection, drag state |
+| `--success`        | `#4fd68c`                  | valid state                             |
+| `--danger`         | `#e0623f`                  | invalid/error state                     |
+| `--grid-line`      | `rgba(63, 208, 224, 0.08)` | blueprint grid overlay                  |
 
 **Type pairing:** [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono)
 for the wordmark, labels, and coordinates (technical, monospace, matches the
@@ -80,7 +80,7 @@ canvases into one coherent "sheet."
   opacity+scale over 120ms; removing one fades+shrinks over 100ms before
   the remaining rectangles tween into their new slots.
 - **Selection feedback:** hovering a window rectangle in any pane
-  highlights the *same window id* across all four panes simultaneously
+  highlights the _same window id_ across all four panes simultaneously
   (thin amber outline) — this is the comparison payoff, made visible.
 - No sound is planned for v1 (Tiler is a precision tool, not a toy) — skip
   the synth SFX list; if a future pass adds audio it must follow the same

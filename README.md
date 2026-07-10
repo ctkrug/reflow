@@ -7,7 +7,7 @@ side by side, in real time.
 ## Why
 
 Tiling window managers (i3, dwm, Hyprland, xmonad...) each implement a
-different layout algorithm, but you never actually *see* them compared
+different layout algorithm, but you never actually _see_ them compared
 against each other — you read a paragraph describing "spiral" placement or
 you watch a screen recording of one WM at a time. Tiler puts four
 implementations on screen simultaneously, fed by the same input, so you can
@@ -28,7 +28,7 @@ out simultaneously as you add, remove, and drag windows around.
   "windows" and see every algorithm's layout update live
 - Per-algorithm labeled panes so the four layouts are visually comparable
   side by side
-- Smooth transition animation when a layout reflows, so the *reasoning* of
+- Smooth transition animation when a layout reflows, so the _reasoning_ of
   each algorithm is visible, not just the end state
 - A small control panel: window count, aspect-ratio jitter, and a way to
   step through the layout history
