@@ -140,13 +140,7 @@ export function renderPane(
     drawEmptyState(ctx, cssWidth, cssHeight);
   } else {
     rects.forEach((rect) =>
-      drawRect(
-        ctx,
-        rect,
-        cssWidth,
-        cssHeight,
-        rect.id === options.highlightId,
-      ),
+      drawRect(ctx, rect, cssWidth, cssHeight, rect.id === options.highlightId),
     );
   }
   drawStamp(ctx, options, cssWidth, cssHeight);

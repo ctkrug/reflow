@@ -51,17 +51,17 @@ describe("sampleTransition", () => {
       x: 0,
       opacity: 1,
     });
-    expect(sampleTransition(transition, DEFAULT_DURATIONS.moveMs)).toMatchObject(
-      { x: 0.5, opacity: 1 },
-    );
+    expect(
+      sampleTransition(transition, DEFAULT_DURATIONS.moveMs),
+    ).toMatchObject({ x: 0.5, opacity: 1 });
   });
 
   it("fades an added rect in from 0 to full opacity", () => {
     const transition: RectTransition = { id: "b", from: null, to: RECT_B };
     expect(sampleTransition(transition, 0)?.opacity).toBe(0);
-    expect(
-      sampleTransition(transition, DEFAULT_DURATIONS.addMs)?.opacity,
-    ).toBe(1);
+    expect(sampleTransition(transition, DEFAULT_DURATIONS.addMs)?.opacity).toBe(
+      1,
+    );
   });
 
   it("fades a removed rect out and then disappears", () => {

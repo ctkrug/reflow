@@ -104,7 +104,7 @@ pane, not a free-form move of raw coordinates.
   for every token in `docs/DESIGN.md`, the grid-paper body background,
   themed button states (hover/focus-visible/active/disabled), the
   responsive 2×2-desktop / stacked-phone pane grid, and `touch-action:
-  none` + grab/grabbing cursors on the pane canvases for dragging.
+none` + grab/grabbing cursors on the pane canvases for dragging.
 
 ## How to run / test
 
